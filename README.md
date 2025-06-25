@@ -1,6 +1,6 @@
 # homelab
 
-Welcome to my cybersecurity home lab — a segmented, enterprise-style environment where I design, build, and break down infrastructure to better understand how security works at scale.
+Welcome to my cybersecurity home lab:a segmented, enterprise-style environment where I design, build, and break down infrastructure to better understand how security works at scale.
 
 This project represents my personal exploration across all areas of modern IT and security:
 
