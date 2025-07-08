@@ -14,4 +14,4 @@ This project represents my personal exploration across all areas of modern IT an
 
 While some integrations related to work are excluded, everything here reflects my hands-on approach and passion for understanding security at a deep level.
 
-> 💡 I built this lab not just to study, but because I genuinely love this stuff. Learning never stops.
+> I built this lab not just to study, but because I am a nerd.
