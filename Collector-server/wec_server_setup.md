@@ -4,7 +4,7 @@ This document outlines the configuration of the Windows Event Collector (WEC) se
 
 ---
 
-## 🎯 Purpose
+## Purpose
 
 * Centralize and normalize Windows event logs
 * Forward logs from all domain-joined endpoints (servers and workstations)
@@ -12,7 +12,7 @@ This document outlines the configuration of the Windows Event Collector (WEC) se
 
 ---
 
-## 🖥️ Host Info
+## Host Info
 
 * **Hostname:** `LAB-WEC`
 * **OS:** Windows Server 2022
@@ -21,7 +21,7 @@ This document outlines the configuration of the Windows Event Collector (WEC) se
 
 ---
 
-## ⚙️ Setup Steps
+## Setup Steps
 
 ### 1. Install WEC Role
 
@@ -64,7 +64,7 @@ Start-Service Wecsvc
 
 ---
 
-## ✅ Validation
+## Validation
 
 * On client: Check `wevtutil ep` to verify connection to the subscription
 * On WEC: Navigate to `Event Viewer` → `Forwarded Events`
@@ -72,7 +72,7 @@ Start-Service Wecsvc
 
 ---
 
-## 📦 Integration with Wazuh
+## Integration with Wazuh
 
 * Wazuh agent installed on `LAB-WEC`
 * WEC forwards logs to `/var/ossec/logs/` via the Wazuh agent
