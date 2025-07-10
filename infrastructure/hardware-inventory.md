@@ -4,7 +4,7 @@ This document tracks the hardware used in the home lab setup, including physical
 
 ---
 
-## 🖥️ Lab Endpoints & Admin PCs
+## Lab Endpoints & Admin PCs
 
 ### **Dell 7000 Series (LAB-ADMIN1)**
 
@@ -22,7 +22,7 @@ This document tracks the hardware used in the home lab setup, including physical
 
 ---
 
-## 🧱 Virtualization Host
+## Virtualization Host
 
 ### **Old Gaming PC (Proxmox Hypervisor)**
 
@@ -36,7 +36,7 @@ This document tracks the hardware used in the home lab setup, including physical
 
 ---
 
-## 🌐 Network Infrastructure
+## Network Infrastructure
 
 ### **Firewall: Protectli Vault VP2420**
 
@@ -57,7 +57,7 @@ This document tracks the hardware used in the home lab setup, including physical
 
 ---
 
-## 🖥️ Core Servers & Services (Hosted on Proxmox)
+## Core Servers & Services (Hosted on Proxmox)
 
 | Hostname     | Role                    | OS                  | VLAN | IP (Example) |
 | ------------ | ----------------------- | ------------------- | ---- | ------------ |
