@@ -4,15 +4,15 @@ This document outlines the physical and logical network layout of the home lab, 
 
 ---
 
-## 🔧 Physical Hardware
+## Physical Hardware
 
-### 🧱 Firewall:
+### Firewall:
 
 * **Model:** Protectli Vault VP2420
 * **Firewall Software:** OPNsense
 * **Purpose:** Gateway, routing, VLAN management, DHCP (per VLAN), DNS (optional), internet egress control
 
-### 🔌 Switches:
+### Switches:
 
 * **Downstairs Core Switch:** D-Link DGS-1510-52 (Layer 3)
 * **Upstairs Access Switch:** Netgear ProSAFE GS108E (smart switch)
@@ -20,14 +20,14 @@ This document outlines the physical and logical network layout of the home lab, 
 
 ---
 
-## 🌐 VLAN Configuration
+## VLAN Configuration
 
 | VLAN ID | Name  | Subnet          | Purpose                  |
 | ------- | ----- | --------------- | ------------------------ |
 | 10      | Admin | 192.168.10.0/24 | Personal PC, mgmt access |
 | 20      | Lab   | 10.10.10.0/24   | Home lab + test VMs      |
 
-### 💡 Key Concepts:
+### Key Concepts:
 
 * VLANs are trunked across switches
 * Inter-VLAN routing is handled by OPNsense
@@ -36,7 +36,7 @@ This document outlines the physical and logical network layout of the home lab, 
 
 ---
 
-## 🧵 Switch Port Layout
+## Switch Port Layout
 
 ### Downstairs D-Link DGS-1510-52:
 
@@ -51,7 +51,7 @@ This document outlines the physical and logical network layout of the home lab, 
 
 ---
 
-## 🛜 DHCP & Static IPs
+## DHCP & Static IPs
 
 * **DHCP:** Managed by OPNsense per VLAN
 * **Static IPs:** Reserved for:
@@ -62,7 +62,7 @@ This document outlines the physical and logical network layout of the home lab, 
 
 ---
 
-## 🧪 Network Flow Summary
+## Network Flow Summary
 
 ```
                [ Internet ]
@@ -81,7 +81,7 @@ This document outlines the physical and logical network layout of the home lab, 
 
 ---
 
-## ✅ Outcome
+## Outcome
 
 * Layered network segmentation via VLANs
 * Inter-VLAN routing controlled and logged by firewall
