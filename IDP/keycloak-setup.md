@@ -1,41 +1,52 @@
-#Keycloak Identity Provider (IdP) Setup in a Home Lab
-This guide documents how I deployed and configured Keycloak as an Identity Provider (IdP) in my segmented cybersecurity home lab. The goal of this project was to implement real-world authentication and authorization flows using OAuth2 and OpenID Connect (OIDC), and to simulate identity federation and application access across VLANs.
+# Keycloak Identity Provider (IdP) Setup in a Home Lab
 
-Lab Overview
-IdP Platform: Keycloak 22.x (Docker-based deployment)
+This guide documents the steps I took to deploy and configure Keycloak as an Identity Provider (IdP) in a segmented home lab environment using Docker, Ubuntu, and VLAN-based network segmentation. The lab was used to simulate real-world OAuth2 and OpenID Connect (OIDC) authentication and authorization flows.
 
-OS: Ubuntu 22.04 Server (on Proxmox VM)
+---
 
-Network: VLAN-segmented lab (LAB VLAN: 10.10.10.0/24)
+## Lab Overview
 
-Protocols: OAuth 2.0, OpenID Connect
+* **IdP Platform**: Keycloak 22.x (Docker deployment)
+* **OS**: Ubuntu 22.04 Server (minimal install)
+* **Virtualization**: Proxmox
+* **Network**: LAB VLAN (10.10.10.0/24)
+* **Protocols**: OAuth 2.0, OpenID Connect (OIDC)
+* **Clients**: Simulated frontend (SPA) and backend API (Node.js)
+* **Use Cases**: Single Sign-On, RBAC, token validation, secure access to protected APIs
 
-Client Apps: Simulated frontend and backend API for token-based access testing
+---
 
-1. VM Setup
-Provisioned a new VM in Proxmox:
+## 1. Prepare the VM
 
-2 vCPUs, 4 GB RAM, 20 GB disk
+### 1.1 Create a new VM in Proxmox
 
-Connected to the LAB VLAN
+* 2 CPUs, 4–8 GB RAM, 20+ GB disk
+* Connect to your LAB VLAN (e.g., VLAN 20)
 
-Installed Ubuntu 22.04 and configured a static IP:
+### 1.2 Install Ubuntu 22.04
 
-bash
-Copy
-Edit
+* Use "Erase disk and install Ubuntu"
+* Set a static IP using Netplan or GUI (e.g. `10.10.10.30`)
+
+```bash
 sudo nano /etc/netplan/00-installer-config.yaml
-# Example IP: 10.10.10.30
-sudo netplan apply
-2. Deployed Keycloak via Docker
-I used Docker for a fast and isolated deployment. Running Keycloak in start-dev mode allowed rapid iteration during setup and testing.
+# Set your static IP, gateway, and DNS
 
-bash
-Copy
-Edit
+sudo netplan apply
+```
+
+---
+
+## 2. Deploy Keycloak via Docker
+
+```bash
+# Update and install Docker
 sudo apt update && sudo apt install docker.io docker-compose -y
+
+# Pull Keycloak image
 docker pull quay.io/keycloak/keycloak:22.0.5
 
+# Run Keycloak container in development mode
 docker run -d \
   --name keycloak \
   -p 8080:8080 \
@@ -43,86 +54,120 @@ docker run -d \
   -e KEYCLOAK_ADMIN_PASSWORD=changeme \
   quay.io/keycloak/keycloak:22.0.5 \
   start-dev
-Accessed the Keycloak admin console at http://10.10.10.30:8080
+```
 
-3. Initial Configuration
-Inside the Keycloak UI:
+> 📍 After deployment, access the Keycloak admin console at:  
+> `http://10.10.10.30:8080`
 
-Created a new realm called lab
+Login:
+```
+Username: admin
+Password: changeme
+```
 
-Created a test user and set credentials manually
+---
 
-Defined two clients:
+## 3. Keycloak Initial Configuration
 
-frontend-app: Public client using Authorization Code flow
+### 3.1 Create Realm
 
-api-server: Confidential client for server-to-server access
+* Name: `lab`
 
-Configured redirect URIs and enabled appropriate flows:
+### 3.2 Create a Test User
 
-Authorization Code
+* Username: `testuser`
+* Manually set a password
+* Disable "Temporary Password"
+* Optionally assign built-in or custom roles
 
-Refresh Token
+### 3.3 Create Clients
 
-Optional: Implicit flow for SPA testing
+**Frontend App (OIDC Public Client)**
 
-4. Token Customization
-Configured the token settings to reflect real-world security practices:
+* Client ID: `frontend-app`
+* Client Type: `Public`
+* Redirect URI: `http://localhost:3000/*`
+* Enable flows:
+  * Authorization Code
+  * Refresh Token
 
-Access Token lifespan: 5 minutes
+**Backend API (OIDC Confidential Client)**
 
-Refresh Token lifespan: 30 minutes
+* Client ID: `api-server`
+* Client Type: `Confidential`
+* Configure client secret
+* Enable service account access (optional)
 
-Refresh token rotation enabled
+---
 
-Added custom claims (roles, email, etc.)
+## 4. Configure Token Settings
 
-These settings allowed me to test expiration handling, refresh flows, and role-based access control (RBAC) logic in consuming apps.
+* Access Token lifespan: `5 minutes`
+* Refresh Token lifespan: `30 minutes`
+* Enable Refresh Token Rotation: `true`
+* Enable Client Credentials Flow for machine-to-machine API access (optional)
 
-5. Simulated OAuth2 + OIDC Flow
-Used a mock frontend to initiate an OIDC login:
+---
 
-ruby
-Copy
-Edit
+## 5. Test OIDC Authentication Flow
+
+Open a browser and visit the authorization endpoint:
+
+```text
 https://10.10.10.30:8080/realms/lab/protocol/openid-connect/auth?
   client_id=frontend-app
   &redirect_uri=http://localhost:3000/callback
   &response_type=code
   &scope=openid email profile
-Captured the authorization code and exchanged it using curl:
+```
 
-bash
-Copy
-Edit
+Keycloak will prompt for login, then redirect with an auth code.
+
+---
+
+## 6. Exchange Authorization Code for Tokens
+
+```bash
 curl -X POST https://10.10.10.30:8080/realms/lab/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=frontend-app" \
   -d "grant_type=authorization_code" \
   -d "code=<code_here>" \
   -d "redirect_uri=http://localhost:3000/callback"
-Verified the returned access_token and id_token via jwt.io to confirm claims and TTL.
+```
 
-6. Backend API Authorization (Bearer Token)
-Tested the end-to-end flow by protecting a Node.js API with Keycloak-issued JWTs:
+Response:
 
-Integrated express-jwt and jwks-rsa libraries
+```json
+{
+  "access_token": "eyJhbGciOi...",
+  "id_token": "eyJhbGciOi...",
+  "expires_in": 300,
+  "refresh_token": "...",
+  ...
+}
+```
 
-Verified token signature and expiration
+Inspect the token at [https://jwt.io](https://jwt.io) to verify claims such as `sub`, `aud`, `exp`, and `scope`.
 
-Enforced custom scopes and role claims
+---
 
-Tested expired and invalid token scenarios
+## 7. Protect Backend API with JWT
 
-Key Takeaways
-This lab gave me practical experience in:
+* Used `express-jwt` and `jwks-rsa` in a Node.js API
+* Validated signature using Keycloak's JWKS endpoint
+* Enforced access control based on token claims:
+  * `roles`
+  * `aud`
+  * `scope`
+* Simulated token expiration, refresh, and misuse scenarios
 
-Deploying and managing an OAuth2/OIDC-compliant Identity Provider
+---
 
-Understanding access tokens, ID tokens, scopes, and role-based claims
+## Notes
 
-Building and testing real SSO flows across frontend and backend components
+* Keycloak is running in development mode for lab purposes; production setups should use TLS, PostgreSQL backing, and persistent volumes
+* This setup provides full simulation of modern OIDC flows with secure token validation
+* The configuration can be expanded to integrate with Grafana, Jenkins, or external directories like LDAP
 
-Performing token validation, rotation, and introspection
-
-Hardening IdP behavior for production-like scenarios
+---
