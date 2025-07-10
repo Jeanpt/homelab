@@ -62,8 +62,8 @@ This guide documents the initial setup of a Domain Controller (DC) with Active D
    * Select the local server
    * Select roles:
 
-     * ✅ Active Directory Domain Services
-     * ✅ DNS Server
+     *  Active Directory Domain Services
+     *  DNS Server
 3. Continue through the wizard and click **Install**
 
 ---
