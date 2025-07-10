@@ -1,4 +1,4 @@
-Keycloak Identity Provider (IdP) Setup in a Home Lab
+**Keycloak Identity Provider (IdP) Setup in a Home Lab
 This guide documents how I deployed and configured Keycloak as an Identity Provider (IdP) in my segmented cybersecurity home lab. The goal of this project was to implement real-world authentication and authorization flows using OAuth2 and OpenID Connect (OIDC), and to simulate identity federation and application access across VLANs.
 
 Lab Overview
